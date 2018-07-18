@@ -61,18 +61,24 @@ def XYcalc(data, xcen, ycen, zcen, detwidth, detheight, pixwidth, pixheight):
     ycoords = np.linspace(ymin,ymax)
     
     shapenum = float(detwidth) * float(detheight) / 2
+    #print shapenum, type(shapenum)
     #reform data
-    datamod = np.reshape(data, (shapenum,2))
-    print datamod.shape
+    datamod = np.reshape(data, (int(shapenum),2))
+    #print datamod.shape
     
-    return xcoords, ycoords
+    return xcoords, ycoords, xmin, xmax, ymin, ymax
 
-def SpotPlot(data, xcoords, ycoords):
+def SpotPlot(data, xcoords, ycoords, xmin, xmax, ymin, ymax):
+  
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    plt.imshow(data, extent=[xmin, xmax, ymin, ymax])
+    ax.set_aspect('equal')
     
-    for row in data[row,:]:
-        print "row", row
-        for col in row[col]:
-            print "col", col
+#    for row in data[row,:]:
+#        print "row", row
+#        for col in row[col]:
+#            print "col", col
     
     return    
 
@@ -87,9 +93,12 @@ def MainFunc():
     
     #calculate coordinate array from pixel info
     #still need to assign data value to coordinates
-    xcoords, ycoords = XYcalc(
+    xcoords, ycoords, xmin, xmax, ymin, ymax = XYcalc(
             data, xcen, ycen, zcen, detwidth, detheight, pixwidth, pixheight)
-    print xcoords, ycoords    
+    #print xcoords, ycoords   
+    
+    SpotPlot(data, xcoords, ycoords, xmin, xmax, ymin, ymax)
+    
     
     return
 
