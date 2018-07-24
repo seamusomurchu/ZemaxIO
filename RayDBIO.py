@@ -31,7 +31,7 @@ def RDBrmHeader():
 
 def RDBLoad():
     
-    filename = '/home/james/ZemaxIO/RDBdata_noheader64.txt'
+    filename = '/home/james/ZemaxIO/RDBdata64noheader.txt'
     with open(filename, "r") as ins:
         arrayrow = np.zeros([27]) #need to keep array correct length/comments from data
         for line in ins:
@@ -51,7 +51,7 @@ def RDBLoad():
                 lsplit = lsplit[0:27]
                 arrayrow = np.vstack((arrayrow, lsplit))
 
-        arrayrow = arrayrow[1:127,:] # delete first row zeros
+        arrayrow = arrayrow[1:128,:] # delete first row zeros
         #drop duplicate rows, NB returns sorted numpy array
         print arrayrow.shape, arrayrow[0]
         arrayrow = np.unique(arrayrow, axis=0)
