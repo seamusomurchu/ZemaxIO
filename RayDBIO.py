@@ -50,10 +50,12 @@ def RDBLoad():
                 #print lsplit, type(lsplit), len(lsplit), type(lsplit[0])
                 lsplit = lsplit[0:27]
                 arrayrow = np.vstack((arrayrow, lsplit))
-       # print arrayrow.shape
+
         arrayrow = arrayrow[1:127,:] # delete first row zeros
-        #drop duplicate rows
-        arrayrow = pd.drop_duplicates(arrayrow)
+        #drop duplicate rows, NB returns sorted numpy array
+        print arrayrow.shape, arrayrow[0]
+        arrayrow = np.unique(arrayrow, axis=0)
+        print arrayrow.shape, arrayrow[0]
         return arrayrow
 
 def RDBMain():
@@ -62,7 +64,7 @@ def RDBMain():
     #return array of segment/dichroic
     #could pass in segment number here for generalisation
     segmentarray = RDBLoad()
-    #print segmentarray.shape, segmentarray[0]
+    print segmentarray.shape, segmentarray[0]
     
     return
 
