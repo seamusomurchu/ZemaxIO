@@ -16,34 +16,53 @@ For now, I'm including all '7' options ticked... except processed data?
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
+import re
+import os
+
+def RDBrmHeader():
+    #uses bash from OS to remove header, NB +13 is hardcoded
+    script = """
+            bash -c 'tail -n +13 "RDBdata64.txt" > "RDBdata_noheaderTMP.txt" && mv "RDBdata_noheaderTMP.txt" "RDBdata64noheader.txt"'
+            """
+    os.system ("bash -c '%s'" % script)
+    
+    return 
 
 def RDBLoad():
     
-    filename = 'RDBdata.txt'
+    filename = '/home/james/ZemaxIO/RDBdata_noheader64.txt'
     with open(filename, "r") as ins:
-        array = []
+        arrayrow = np.zeros([27]) #need to keep array correct length/comments from data
         for line in ins:
+            
+            if re.match(r'^\s*$', line): #Skip blank lines in file
+                continue
+            elif line[0] is 'R' or line[0] is 'S': #If line begins with R or S, skip
+                continue
+            
             lsplit = line.split()
             lsplit = np.asarray(lsplit)
-            print lsplit, type(lsplit), len(lsplit)
-#            if len(lsplit) > 0 and lsplit[0] is '4':
-#                print lsplit
-#            else:
-#                return
 
-            #print line, line[3]
-#            if line[3] is '0':
-#                print line
-#                array.append(line)
-#            else:
-#                return
-     
-        return
+            """here 4 refers to segment 4, the Dichroic from the zemax model
+            """
+            if int(lsplit[0]) == 4: 
+                #print lsplit, type(lsplit), len(lsplit), type(lsplit[0])
+                lsplit = lsplit[0:27]
+                arrayrow = np.vstack((arrayrow, lsplit))
+       # print arrayrow.shape
+        arrayrow = arrayrow[1:127,:] # delete first row zeros
+        #drop duplicate rows
+        arrayrow = pd.drop_duplicates(arrayrow)
+        return arrayrow
 
 def RDBMain():
-    
-    RDBLoad()
+    #remove header from RDB file
+    RDBrmHeader()
+    #return array of segment/dichroic
+    #could pass in segment number here for generalisation
+    segmentarray = RDBLoad()
+    #print segmentarray.shape, segmentarray[0]
     
     return
 
