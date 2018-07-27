@@ -18,6 +18,7 @@ For now, I'm including all '7' options ticked... except processed data?
 import numpy as np
 import re
 import os
+import matplotlib.pyplot as plt
 
 def RDBrmHeader():
     #uses bash from OS to remove header, NB +13 is hardcoded
@@ -75,6 +76,7 @@ def RDBLoad():
 def AngleOfIncidence(sarr):
     #see zemax documentation for this calculation
     #make histograms of angles of incidence in Nx, Ny, & Nz
+    thetas = np.array([])
     for row in sarr:
         L = float(row[13])
         M = float(row[14])
@@ -87,11 +89,19 @@ def AngleOfIncidence(sarr):
         k = np.sqrt(Nx**2 + Ny**2 + Nz**2)
         theta = np.arccos( i / j * k )
         theta = np.rad2deg(theta)
+        thetas = np.append(thetas, theta)
         print Nx, Ny, Nz, theta
         
         #this value of theta should be check, was expecting 20degish
         #add angle to seg array
+
+    return thetas
+
+def AngleHist(thetas):
     
+    plt.figure()
+    plt.hist(thetas, bins='auto')
+    plt.show
     
     return
 
@@ -104,10 +114,13 @@ def RDBMain():
     #print segmentarray.shape, segmentarray[0]
     
     #calculate angle of incidence from RDB data
-    AngleOfIncidence(segmentarray)
+    thetas = AngleOfIncidence(segmentarray)
+    
+    #plot histogram
+    AngleHist(thetas)
     
     return
 
-
+RDBMain()
 
 
