@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 def RDBrmHeader():
     #uses bash from OS to remove header, NB +13 is hardcoded
     script = """
-            tail -n +13 "RDBdata64.txt" > "RDBdata_noheaderTMP.txt" && mv "RDBdata_noheaderTMP.txt" "RDBdata64noheader.txt"
+            tail -n +13 "RDBdata64_180.txt" > "RDBdata_noheaderTMP.txt" && mv "RDBdata_noheaderTMP.txt" "RDBdata64noheader_180.txt"
             """
     os.system ("bash -c '%s'" % script)
     
@@ -98,9 +98,12 @@ def AngleOfIncidence(sarr):
     return thetas
 
 def AngleHist(thetas):
-    
+    #need to fix this as I was expecting 45deg. (90+45=135, could be fault)
     plt.figure()
     plt.hist(thetas, bins='auto')
+    plt.xlabel('Angle of Incidence')
+    plt.ylabel('Number of rays per Bin')
+    plt.title('Dichroic AoI Histogram')
     plt.show
     
     return
