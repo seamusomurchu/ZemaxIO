@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 def RDBrmHeader():
     #uses bash from OS to remove header, NB +13 is hardcoded
     script = """
-            tail -n +13 "RDBdata64_180.txt" > "RDBdata_noheaderTMP.txt" && mv "RDBdata_noheaderTMP.txt" "RDBdata64noheader_180.txt"
+            tail -n +13 "RDB_64.txt" > "RDBdata_noheaderTMP.txt" && mv "RDBdata_noheaderTMP.txt" "RDBdata64noheader_64.txt"
             """
     os.system ("bash -c '%s'" % script)
     
@@ -31,7 +31,7 @@ def RDBrmHeader():
 
 def RDBLoad():
     
-    filename = '/home/james/ZemaxIO/RDBdata64noheader.txt'
+    filename = '/home/james/ZemaxIO/RDBdata64noheader_64.txt'
     with open(filename, "r") as ins:
         #setup arrays
         arrayrow = np.zeros([27]) #need to keep array correct length/comments from data
@@ -57,7 +57,7 @@ def RDBLoad():
 
             """here 4 refers to segment 4, the Dichroic from the zemax model
             """
-            if int(lsplit[0]) == 4: 
+            if int(lsplit[0]) == 5: 
                 #print lsplit, type(lsplit), len(lsplit), type(lsplit[0])
                 lsplit = lsplit[0:27]
                 arrayrow = np.vstack((arrayrow, lsplit))
@@ -84,10 +84,10 @@ def AngleOfIncidence(sarr):
         Nx = float(row[16])
         Ny = float(row[17])
         Nz = float(row[18])
-        i = L*Nx + M*Ny + N*Nz
-        j = np.sqrt(L**2 + M**2 + N**2)
-        k = np.sqrt(Nx**2 + Ny**2 + Nz**2)
-        theta = np.arccos( i / j * k )
+#        i = L*Nx + M*Ny + N*Nz
+#        j = np.sqrt(L**2 + M**2 + N**2)
+#        k = np.sqrt(Nx**2 + Ny**2 + Nz**2)
+        theta = np.arccos( L*Nx + M*Ny + N*Nz / (np.sqrt(L**2 + M**2 + N**2) * np.sqrt(Nx**2 + Ny**2 + Nz**2)))
         theta = np.rad2deg(theta)
         thetas = np.append(thetas, theta)
         print Nx, Ny, Nz, theta
@@ -100,7 +100,7 @@ def AngleOfIncidence(sarr):
 def AngleHist(thetas):
     #need to fix this as I was expecting 45deg. (90+45=135, could be fault)
     plt.figure()
-    plt.hist(thetas, bins='auto')
+    plt.hist(thetas - 180, bins=16)
     plt.xlabel('Angle of Incidence')
     plt.ylabel('Number of rays per Bin')
     plt.title('Dichroic AoI Histogram')
