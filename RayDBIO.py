@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 def RDBrmHeader():
     #uses bash from OS to remove header, NB +13 is hardcoded
     script = """
-            tail -n +13 "RDB_64.txt" > "RDBdata_noheaderTMP.txt" && mv "RDBdata_noheaderTMP.txt" "RDBdata64noheader_64.txt"
+            tail -n +13 "RDB_400.txt" > "RDBdata_noheaderTMP.txt" && mv "RDBdata_noheaderTMP.txt" "RDBdata_noheader_400.txt"
             """
     os.system ("bash -c '%s'" % script)
     
@@ -31,7 +31,7 @@ def RDBrmHeader():
 
 def RDBLoad(segnum):
     
-    filename = '/home/james/ZemaxIO/RDBdata64noheader_64.txt'
+    filename = '/home/james/ZemaxIO/RDBdata_noheader_400.txt'
     with open(filename, "r") as ins:
         #setup arrays
         arrayrow = np.zeros([27]) #need to keep array correct length/comments from data
@@ -47,7 +47,7 @@ def RDBLoad(segnum):
                 raysplit = np.asarray(raysplit)
                 raysplit = raysplit[1].split(',')
                 raynum = np.append(raynum, raysplit[0])
-                #print raysplit, raysplit[1]
+                print raysplit, raysplit[1]
                 continue
                 
             elif line[0] is 'S': #If line begins with R or S, skip
@@ -65,8 +65,9 @@ def RDBLoad(segnum):
 
 
         #test RDB ray num logic here
-        arrayrow = arrayrow[1:129,:] # delete first row zeros
-        #print raynum.shape, arrayrow.shape
+        #arrayrow = arrayrow[1:129,:] # delete first row zeros !!! this line for 64 horns
+        arrayrow = arrayrow[1:401,:]
+        print raynum.shape, arrayrow.shape
         arrayrow = np.c_[raynum, arrayrow]
         #print arrayrow.shape
         #drop duplicate rows, NB returns sorted numpy array
@@ -145,7 +146,11 @@ def DetPlotter(sarr1, sarr2, thetas):
     
     plt.figure(2)
     plt.scatter(x2, y2)
-    plt.axis('equal')
+    #plt.axis('equal')
+    plt.xlim(-215, 60)
+    #up close view
+    #plt.xlim(-20, 40)
+    #plt.ylim(325, 425)
     plt.xlabel('X axis PG RF [mm]')
     plt.ylabel('Y axis PG RF [mm]')
     plt.title('Ray Angles in Dichroic Plane')
