@@ -47,7 +47,7 @@ def RDBLoad(segnum):
                 raysplit = np.asarray(raysplit)
                 raysplit = raysplit[1].split(',')
                 raynum = np.append(raynum, raysplit[0])
-                print raysplit, raysplit[1]
+                #print raysplit, raysplit[1]
                 continue
                 
             elif line[0] is 'S': #If line begins with R or S, skip
@@ -67,7 +67,7 @@ def RDBLoad(segnum):
         #test RDB ray num logic here
         #arrayrow = arrayrow[1:129,:] # delete first row zeros !!! this line for 64 horns
         arrayrow = arrayrow[1:401,:]
-        print raynum.shape, arrayrow.shape
+        #print raynum.shape, arrayrow.shape
         arrayrow = np.c_[raynum, arrayrow]
         #print arrayrow.shape
         #drop duplicate rows, NB returns sorted numpy array
@@ -161,7 +161,12 @@ def DetPlotter(sarr1, sarr2, thetas):
     plt.show()
     
     return
+def Analysis(thetas):  
+    #print out basic analysis results. Maybe return them in the future
+    thetasort = np.sort(abs(thetas - 180))
+    print "95 percentile theta val = ", thetasort[380]
     
+    return
 
 def RDBMain():
     plt.close('all') # close all open figures
@@ -186,6 +191,9 @@ def RDBMain():
     
     #plot rays on detectors
     DetPlotter(segmentarray1, segmentarray5, thetas)
+    
+    #basic analysis results
+    Analysis(thetas)
     
     return
 
