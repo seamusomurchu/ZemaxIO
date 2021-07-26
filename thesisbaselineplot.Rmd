@@ -1,0 +1,202 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.6.0
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python}
+from rayfunctions import *
+import pandas as pd
+```
+
+```{python}
+#RDBrmHeader('QUBIC_FI_NS_DICHROIC_OFAFPRF_DB.txt', 'sample.txt')
+#RDBrmHeader('RDB_400.txt', 'sample400.txt')
+RDBrmHeader('QUBIC_FI_NS_DICHROIC_OFAFPRF_simpDB.txt', 'simp4.txt')
+```
+
+```{python}
+# arr = RDBLoad(1, 'sample400.txt')
+# arr1 = RDBLoad(5, 'sample400.txt')
+arr = RDBLoad(1, 'simp4.txt') #m1
+arr1 = RDBLoad(2, 'simp4.txt') #CS, reflections refers to AOI from M1
+arrm2 = RDBLoad(3, 'simp4.txt') #m2
+arrfp = RDBLoad(4, 'simp4.txt') #fp
+
+#arr = np.asarray(arr, dtype=float)
+```
+
+```{python}
+print(arr, arr.shape, type(arr), arr[0,27])
+```
+
+```{python}
+thetas = AngleOfIncidence(arr)
+thetas1 = AngleOfIncidence(arr1)
+thetasm2 = AngleOfIncidence(arrm2)
+thetasfp = AngleOfIncidence(arrfp)
+```
+
+```{python}
+print(thetas, thetas.shape, thetas1)
+```
+
+```{python}
+AngleHist(thetas1)
+```
+
+```{python}
+DetPlotter(arr, arr1, thetas1)
+```
+
+```{python}
+Analysis(thetas)
+```
+
+```{python}
+def DetPlotter2(sarr1, sarr2, thetas):
+    #plot ray number on detector surfaces, multiplot
+    x1 = np.asarray(sarr1[:,10], dtype=np.float32)
+    y1 = np.asarray(sarr1[:,11], dtype=np.float32)
+    x2 = np.asarray(sarr2[:,10], dtype=np.float32)
+    y2 = np.asarray(sarr2[:,11], dtype=np.float32)
+    raytxt1 = np.asarray(sarr1[:,0], dtype=np.int)
+    raytxt2 = np.asarray(sarr2[:,0], dtype=np.int)
+    thetas = np.around(abs(thetas), decimals=1)
+    
+    plt.figure(1)
+    plt.subplot(121)
+    plt.scatter(x1, y1)
+    #plt.axis([-75, 75, -75, 75])
+    plt.axis('equal')
+    plt.xlabel('X axis QUBIC GRF [mm]')
+    plt.ylabel('Y axis QUBIC GRF [mm]')
+    plt.title('Rays from Horns')
+    
+    for i, txt in enumerate(raytxt1):
+        plt.annotate(txt, (x1[i], y1[i]))
+    
+    plt.subplot(122)
+    plt.scatter(x2, y2)
+    plt.axis('equal')
+    plt.xlabel('X axis PG RF [mm]')
+    plt.ylabel('Y axis PG RF [mm]')
+    plt.title('Rays in Dichroic Plane')
+    
+    for i, txt in enumerate(raytxt2):
+        plt.annotate(txt, (x2[i], y2[i]))
+    
+    plt.show()
+    
+    plt.figure(2)
+    plt.scatter(x2, y2)
+    #plt.axis('equal')
+    #plt.xlim(-215, 60)
+    #up close view
+    #plt.xlim(-20, 40)
+    #plt.ylim(325, 425)
+    plt.xlabel('X axis PG RF [mm]')
+    plt.ylabel('Y axis PG RF [mm]')
+    plt.title('Ray Angles in Dichroic Plane')
+    
+    for i, txt in enumerate(thetas):
+        plt.annotate(txt, (x2[i], y2[i]))
+    
+    plt.show()
+    
+    return
+
+DetPlotter(arr, arr1, thetas1)
+```
+
+```{python}
+print(arr.shape)
+```
+
+```{python}
+# for i in range(8+1):
+#     #print(i)
+#     arr = RDBLoad(i+1, 'sample400.txt')
+#     thetas = AngleOfIncidence(arr)
+#     print(i, thetas)
+```
+
+```{python}
+# data = pd.read_csv('QUBIC_FI_NS_DICHROIC_OFAFPRF_simpDB.txt', skiprows=13)
+
+# #df = pd.DataFrame(data,
+# print(data)
+```
+
+```{python}
+"""Seg# 	 Prnt 	 Levl 	 In 	 Hit 	 Face 	 XRTS 	DGEF 	 BZ	                 X	                Y	                Z	                 L	                M	                N	                Nx	               Ny	               Nz	          Path To	            Phase	               Exr	              Exi	              Eyr	              Eyi	              Ezr	              Ezi 	         Intensity 	 Comment"""
+```
+
+```{python}
+print(arr1.shape)
+print(type(arr1[0,13]))
+```
+
+```{python}
+rays = np.array([1, 2, 3, 4])
+hnums = np.array([1, 134, 267, 400])
+```
+
+```{python}
+x1 = np.asarray(arr[:,10], dtype=np.float32)
+y1 = np.asarray(arr[:,11], dtype=np.float32)
+z1 = np.asarray(arr[:,12], dtype=np.float32)
+x2 = np.asarray(arr1[:,10], dtype=np.float32)
+y2 = np.asarray(arr1[:,11], dtype=np.float32)
+z2 = np.asarray(arr1[:,12], dtype=np.float32)
+x3 = np.asarray(arrm2[:,10], dtype=np.float32)
+y3 = np.asarray(arrm2[:,11], dtype=np.float32)
+z3 = np.asarray(arrm2[:,12], dtype=np.float32)
+x4 = np.asarray(arrfp[:,10], dtype=np.float32)
+y4 = np.asarray(arrfp[:,11], dtype=np.float32)
+z4 = np.asarray(arrfp[:,12], dtype=np.float32)
+thetas = np.around(abs(thetas), decimals=1)
+thetas1 = np.around(abs(thetas1), decimals=1)
+thetas1180 = np.around(81.8 - abs(thetas1), decimals=1)
+thetasm2 = np.around(abs(thetasm2), decimals=1)
+thetasfp = np.around(abs(thetasfp), decimals=1)
+
+# plt.figure(figsize=(16,8))
+# plt.scatter(x1,z1)
+#plt.xlim([min(x1), max(x1)])
+plt.figure(figsize=(16,8))
+plt.scatter(-x1, z1)
+for i, txt in enumerate(thetas):
+    plt.annotate(txt, (-x1[i], z1[i]))
+    plt.annotate(hnums[i], (-x1[i], z1[i]-5))
+    
+plt.figure(figsize=(16,8))
+plt.scatter(-x2, z2)
+for i, txt in enumerate(thetas1):
+    plt.annotate(txt, (-x2[i], z2[i]))
+    plt.annotate(hnums[i], (-x2[i], z2[i]-2))
+    
+plt.figure(figsize=(16,8))
+plt.scatter(x3,y3)
+plt.title('m2')
+for i, txt in enumerate(thetasm2):
+    plt.annotate(txt, (x3[i], y3[i]))
+    
+plt.figure(figsize=(16,8))
+plt.scatter(x4,y4)
+plt.title('fp')
+for i, txt in enumerate(thetasfp):
+    plt.annotate(txt, (x4[i], y4[i]))
+```
+
+```{python}
+
+```

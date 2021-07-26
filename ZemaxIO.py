@@ -74,12 +74,12 @@ def SpotPlot(data, xcoords, ycoords, xmin, xmax, ymin, ymax):
     ax = fig.add_subplot(111)
     plt.imshow(data, extent=[xmin, xmax, ymin, ymax])
     ax.set_aspect('equal')
-    
+
 #    for row in data[row,:]:
 #        print "row", row
 #        for col in row[col]:
 #            print "col", col
-    
+
     return    
 
 def MainFunc():
@@ -102,4 +102,4 @@ def MainFunc():
     
     return
 
-#NEED TO THINK MORE ABOUT THIS DATA SHAPE AND PLOTTING METHOD
+# NEED TO THINK MORE ABOUT THIS DATA SHAPE AND PLOTTING METHOD
