@@ -183,6 +183,7 @@ plt.scatter(-x2, z2)
 for i, txt in enumerate(thetas1):
     plt.annotate(txt, (-x2[i], z2[i]))
     plt.annotate(hnums[i], (-x2[i], z2[i]-2))
+plt.savefig('/home/james/OneDrive/Thesisv3_revised_layout/Figures/figs_baselines/zemaxhorns.png')
     
 plt.figure(figsize=(16,8))
 plt.scatter(x3,y3)
@@ -198,5 +199,10 @@ for i, txt in enumerate(thetasfp):
 ```
 
 ```{python}
-
+plt.figure(figsize=(16,8))
+plt.scatter(-x2, z2)
+for i, txt in enumerate(thetas1):
+    plt.annotate(txt, (-x2[i], z2[i]))
+    plt.annotate(hnums[i], (-x2[i], z2[i]-2))
+plt.savefig('/home/james/OneDrive/Thesisv3_revised_layout/Figures/figs_baselines/zemaxhorns.png')
 ```
