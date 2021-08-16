@@ -1,0 +1,379 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.6.0
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python}
+from rayfunctions import *
+import pandas as pd
+```
+
+```{python}
+"""USEFUL INFO"""
+#https://community.zemax.com/got-a-question-7/is-an-angle-of-incidence-report-available-in-the-ray-database-viewer-866
+```
+
+```{python}
+#RDBrmHeader('QUBIC_FI_NS_DICHROIC_OFAFPRF_DB.txt', 'sample.txt')
+RDBrmHeader('RDB_400.txt', 'sample400.txt')
+#RDBrmHeader('QUBIC_FI_NS_DICHROIC_OFAFPRF_simpDB.txt', 'simp4.txt')
+```
+
+```{python}
+arr = RDBLoad(1, 'sample400.txt')
+arr1 = RDBLoad(5, 'sample400.txt')
+# arr = RDBLoad(1, 'simp4.txt') #m1
+# arr1 = RDBLoad(2, 'simp4.txt') #CS, reflections refers to AOI from M1
+# arrm2 = RDBLoad(3, 'simp4.txt') #m2
+# arrfp = RDBLoad(4, 'simp4.txt') #fp
+
+#arr = np.asarray(arr, dtype=float)
+```
+
+```{python}
+print(arr, arr.shape, type(arr), arr[0,27])
+```
+
+```{python}
+thetas = AngleOfIncidence(arr)
+thetas1 = AngleOfIncidence(arr1)
+# thetasm2 = AngleOfIncidence(arrm2)
+# thetasfp = AngleOfIncidence(arrfp)
+```
+
+```{python}
+print(thetas, thetas.shape, thetas1)
+```
+
+```{python}
+AngleHist(thetas1)
+```
+
+```{python}
+DetPlotter(arr, arr1, thetas1)
+```
+
+```{python}
+Analysis(thetas)
+```
+
+```{python}
+def DetPlotter2(sarr1, sarr2, thetas):
+    #plot ray number on detector surfaces, multiplot
+    x1 = np.asarray(sarr1[:,10], dtype=np.float32)
+    y1 = np.asarray(sarr1[:,11], dtype=np.float32)
+    x2 = np.asarray(sarr2[:,10], dtype=np.float32)
+    y2 = np.asarray(sarr2[:,11], dtype=np.float32)
+    raytxt1 = np.asarray(sarr1[:,0], dtype=np.int)
+    raytxt2 = np.asarray(sarr2[:,0], dtype=np.int)
+    thetas = np.around(abs(thetas), decimals=1)
+    
+    plt.figure(1)
+    plt.subplot(121)
+    plt.scatter(x1, y1)
+    #plt.axis([-75, 75, -75, 75])
+    plt.axis('equal')
+    plt.xlabel('X axis QUBIC GRF [mm]')
+    plt.ylabel('Y axis QUBIC GRF [mm]')
+    plt.title('Rays from Horns')
+    
+    for i, txt in enumerate(raytxt1):
+        plt.annotate(txt, (x1[i], y1[i]))
+    
+    plt.subplot(122)
+    plt.scatter(x2, y2)
+    plt.axis('equal')
+    plt.xlabel('X axis PG RF [mm]')
+    plt.ylabel('Y axis PG RF [mm]')
+    plt.title('Rays in Dichroic Plane')
+    
+    for i, txt in enumerate(raytxt2):
+        plt.annotate(txt, (x2[i], y2[i]))
+    
+    plt.show()
+    
+    plt.figure(2)
+    plt.scatter(x2, y2)
+    #plt.axis('equal')
+    #plt.xlim(-215, 60)
+    #up close view
+    #plt.xlim(-20, 40)
+    #plt.ylim(325, 425)
+    plt.xlabel('X axis PG RF [mm]')
+    plt.ylabel('Y axis PG RF [mm]')
+    plt.title('Ray Angles in Dichroic Plane')
+    
+    for i, txt in enumerate(thetas):
+        plt.annotate(txt, (x2[i], y2[i]))
+    
+    plt.show()
+    
+    plt.figure()
+    plt.scatter(x2, y2)
+    #plt.axis('equal')
+    #plt.xlim(-215, 60)
+    #up close view
+    plt.xlim([-20, 40])
+    plt.ylim([325, 425])
+
+    plt.xlabel('X axis PG RF [mm]')
+    plt.ylabel('Y axis PG RF [mm]')
+    plt.title('Ray Angles in Dichroic Plane Zoom')
+    
+    for i, txt in enumerate(thetas):
+        plt.annotate(txt, (x2[i], y2[i]))
+        
+
+    
+    plt.show()
+    
+    return
+
+DetPlotter2(arr, arr1, thetas1)
+```
+
+```{python}
+print(thetas.shape, x2.shape)
+```
+
+```{python}
+
+#plot ray number on detector surfaces, multiplot
+x1 = np.asarray(arr[:,10], dtype=np.float32)
+y1 = np.asarray(arr[:,11], dtype=np.float32)
+x2 = np.asarray(arr1[:,10], dtype=np.float32)
+y2 = np.asarray(arr1[:,11], dtype=np.float32)
+raytxt1 = np.asarray(arr[:,0], dtype=np.int)
+raytxt2 = np.asarray(arr1[:,0], dtype=np.int)
+thetas = np.around(abs(thetas1)-180, decimals=1) 
+
+
+plt.figure(figsize=(16,8))
+plt.scatter(x2, y2)
+#plt.axis('equal')
+#plt.xlim(-215, 60)
+#up close view
+
+
+plt.xlabel('X axis PG RF [mm]')
+plt.ylabel('Y axis PG RF [mm]')
+plt.title('Ray Angles in Dichroic Plane Zoom')
+
+for i, txt in enumerate(thetas):
+    plt.text(x2[i], y2[i], thetas[i])
+
+# plt.xlim([-20, 40])
+# plt.ylim([325, 425])
+# for i, txt in enumerate(thetas):
+#     if x2[i] > -20 and x2[i] < 40 and y2[i] > 325 and y2[i] < 425:
+#         plt.text(x2[i], y2[i], thetas[i])
+plt.show()
+    
+# for i, txt in enumerate(thetas):
+    
+#     if x2[i] > -20 and x2[i] < 40 and y2[i] > 325 and y2[i] < 425:
+#         plt.annotate(txt, (x2[i], y2[i]))
+    
+
+```
+
+```{python}
+print(arr.shape)
+```
+
+```{python}
+# for i in range(8+1):
+#     #print(i)
+#     arr = RDBLoad(i+1, 'sample400.txt')
+#     thetas = AngleOfIncidence(arr)
+#     print(i, thetas)
+```
+
+```{python}
+# data = pd.read_csv('QUBIC_FI_NS_DICHROIC_OFAFPRF_simpDB.txt', skiprows=13)
+
+# #df = pd.DataFrame(data,
+# print(data)
+```
+
+```{python}
+"""Seg# 	 Prnt 	 Levl 	 In 	 Hit 	 Face 	 XRTS 	DGEF 	 BZ	                 X	                Y	                Z	                 L	                M	                N	                Nx	               Ny	               Nz	          Path To	            Phase	               Exr	              Exi	              Eyr	              Eyi	              Ezr	              Ezi 	         Intensity 	 Comment"""
+```
+
+```{python}
+print(arr1.shape)
+print(type(arr1[0,13]))
+```
+
+```{python}
+rays = np.array([1, 2, 3, 4])
+hnums = np.array([1, 134, 267, 400])
+```
+
+```{python}
+x1 = np.asarray(arr[:,10], dtype=np.float32)
+y1 = np.asarray(arr[:,11], dtype=np.float32)
+z1 = np.asarray(arr[:,12], dtype=np.float32)
+x2 = np.asarray(arr1[:,10], dtype=np.float32)
+y2 = np.asarray(arr1[:,11], dtype=np.float32)
+z2 = np.asarray(arr1[:,12], dtype=np.float32)
+x3 = np.asarray(arrm2[:,10], dtype=np.float32)
+y3 = np.asarray(arrm2[:,11], dtype=np.float32)
+z3 = np.asarray(arrm2[:,12], dtype=np.float32)
+x4 = np.asarray(arrfp[:,10], dtype=np.float32)
+y4 = np.asarray(arrfp[:,11], dtype=np.float32)
+z4 = np.asarray(arrfp[:,12], dtype=np.float32)
+thetas = np.around(abs(thetas), decimals=1)
+thetas1 = np.around(abs(thetas1), decimals=1)
+thetas1180 = np.around(81.8 - abs(thetas1), decimals=1)
+thetasm2 = np.around(abs(thetasm2), decimals=1)
+thetasfp = np.around(abs(thetasfp), decimals=1)
+
+# plt.figure(figsize=(16,8))
+# plt.scatter(x1,z1)
+#plt.xlim([min(x1), max(x1)])
+plt.figure(figsize=(16,8))
+plt.scatter(-x1, z1)
+for i, txt in enumerate(thetas):
+    plt.annotate(txt, (-x1[i], z1[i]))
+    plt.annotate(hnums[i], (-x1[i], z1[i]-5))
+    
+plt.figure(figsize=(16,8))
+plt.scatter(-x2, z2)
+for i, txt in enumerate(thetas1):
+    plt.annotate(txt, (-x2[i], z2[i]))
+    plt.annotate(hnums[i], (-x2[i], z2[i]-2))
+plt.savefig('/home/james/OneDrive/Thesisv3_revised_layout/Figures/figs_baselines/zemaxhorns.png')
+    
+plt.figure(figsize=(16,8))
+plt.scatter(x3,y3)
+plt.title('m2')
+for i, txt in enumerate(thetasm2):
+    plt.annotate(txt, (x3[i], y3[i]))
+    
+plt.figure(figsize=(16,8))
+plt.scatter(x4,y4)
+plt.title('fp')
+for i, txt in enumerate(thetasfp):
+    plt.annotate(txt, (x4[i], y4[i]))
+```
+
+```{python}
+plt.figure(figsize=(16,8))
+plt.scatter(-x2, z2)
+for i, txt in enumerate(thetas1):
+    plt.annotate(txt, (-x2[i], z2[i]))
+    plt.annotate(hnums[i], (-x2[i], z2[i]-2))
+plt.savefig('/home/james/OneDrive/Thesisv3_revised_layout/Figures/figs_baselines/zemaxhorns.png')
+```
+
+```{python}
+"""some new separate plotting"""
+
+```
+
+```{python}
+point = [1,2,3];
+normal = [1,2,2];
+#t=np.array[0:10:360];
+t=np.linspace(0,360,10)
+circle0=[np.cos(t), np.sin(t), np.zeros(len(t),1)];
+r=vrrotvec2mat(vrrotvec([0, 0, 1],normal));
+circle=circle0*r+repmat(point,length(circle0),1);
+patch(circle[:,1],circle[:,2],circle[:,3],.5);
+#axis square; grid on;
+# %add line
+line=[point,point+normr(normal)]
+#hold on;
+plot3(line[:,1],line[:,2],line[:,3],'LineWidth',5)
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+# %matplotlib inline
+import seaborn as sns
+
+# set normal vector, and point on plane
+point  = np.array([1, 2, 3])
+normal = np.array([1, 1, 2])
+
+# a plane is a*x+b*y+c*z+d=0
+# [a,b,c] is the normal. Thus, we have to calculate
+# d and we're set
+d = -point.dot(normal)
+
+# create x,y
+xx, yy = np.meshgrid(range(10), range(10))
+
+# calculate corresponding z
+z = (-normal[0] * xx - normal[1] * yy - d) * 1. /normal[2]
+
+# setup plot
+plt3d = plt.figure(figsize=(10,10)).gca(projection='3d');
+plt3d.set_xlabel('x');
+plt3d.set_ylabel('y');
+plt3d.set_zlabel('z');
+
+# plot the surface
+plt3d.plot_surface(xx, yy, z, alpha=0.7);
+
+# plot the point
+plt3d.plot([point[0]], [point[1]], [point[2]], color='yellow', marker='o', markersize=10, alpha=0.8);
+
+# set the normal vector to start at the center of the plane
+startX = np.mean(plt3d.get_xlim())
+startY = np.mean(plt3d.get_ylim())
+startZ = (-normal[0] * startX - normal[1] * startY - d) * 1. /normal[2]
+
+# set the normal vector to start at the point on the plane
+startX = point[0]
+startY = point[1]
+startZ = point[2]
+
+# plot the normal vector
+plt3d.quiver([startX], [startY], [startZ], [normal[0]], [normal[1]], [normal[2]], linewidths = (5,), edgecolor="red");
+```
+
+```{python}
+# %matplotlib notebook
+```
+
+```{python}
+# setup plot
+plt3d = plt.figure(figsize=(10,10)).gca(projection='3d');
+plt3d.set_xlabel('x');
+plt3d.set_ylabel('y');
+plt3d.set_zlabel('z');
+
+ray=150
+
+point = np.array([float(arr1[ray,10]), float(arr1[ray,11]), float(arr1[ray,12])])
+normal = np.array([float(arr1[ray,16]), float(arr1[ray,17]), float(arr1[ray,18])])
+# calculate corresponding z
+d = -point.dot(normal)
+z = (-normal[0] * point[0] - normal[1] * point[1] - d) * 1. /normal[2]
+
+#plt.figure(figsize=(16,8))
+plt3d.plot(point[0], point[1], point[2], color='orange', marker='o', markersize=10, alpha=1);
+plt3d.quiver(point[0], point[1], point[2], [normal[0]], [normal[1]], [normal[2]], length=30, linewidths = (3,), edgecolor="red");
+for i, a in enumerate(arr1):
+    #print(i, arr1[i,10], arr1[i,16])
+    plt3d.plot(float(arr1[i,10]), float(arr1[i,11]), float(arr1[i,12]), color='blue', marker='o', markersize=5, alpha=0.8);
+    
+
+```
+
+```{python}
+
+```

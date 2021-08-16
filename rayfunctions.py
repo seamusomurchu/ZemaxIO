@@ -59,6 +59,7 @@ def RDBLoad(segnum, filename):
 def AngleOfIncidence(sarr):
     #see zemax documentation for this calculation
     #make histograms of angles of incidence in Nx, Ny, & Nz
+    #https://community.zemax.com/got-a-question-7/is-an-angle-of-incidence-report-available-in-the-ray-database-viewer-866
     thetas = np.array([])
     for row in sarr:
         L = float(row[13])
